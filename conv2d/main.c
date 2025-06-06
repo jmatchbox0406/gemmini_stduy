@@ -213,19 +213,10 @@ static void conv_2d (
         //mv_out_col_blck *= DIM;
         for (int o_ch = 0; o_ch < o_ch_t; o_ch += DIM)
         {
-            const uint32_t o_col = o_ch + DIM > o_ch_t ? o_ch_t - o_ch : DIM;
-            uint32_t o_ch_abs = o_ch + o_ch_s;
-            //const uint32_t * b_dram_addr = (full_bias ? (acc_t)bias : (elem_t *)bias) + o_ch_abs;
-            const uint32_t * b_dram_addr = bias + o_ch_abs;
-            // printf("o_ch_abs %d\n", o_ch_abs);
-            // printf("b_dram_addr %x\n", b_dram_addr);
             for (int o_r = 0; o_r < o_r_t; o_r += 1)
             {
-                uint32_t o_r_abs = o_r + o_r_s;
                 for (int o_c = 0; o_c < o_c_t; o_c += 1)
                 {
-                    uint32_t o_c_abs = o_c + o_c_s;
-                    uint32_t o_sp_addr = o_sp_addr_start + ((o_ch / DIM) * o_r_t + o_r) * o_c_t + o_c;
                     // printf("mvinb 0x%08X,0x%08X,%d,\n", b_dram_addr, o_sp_addr, o_col);
                     // gemmini_extended_mvin3(b_dram_addr, o_sp_addr, o_col, 1);
                     // +++
@@ -429,17 +420,10 @@ static void conv_2d (
         //mv_out_col_blck *= DIM;
         for (int o_ch_s = 0; o_ch_s < o_ch_t; o_ch_s += DIM)
         {
-            const uint32_t o_col = o_ch_s + DIM > o_ch_t ? o_ch_t - o_ch_s : DIM;
-            uint32_t o_ch_abs = o_ch_s + o_ch_s;
             for (int o_r = 0; o_r < o_r_t; o_r += 1)
             {
-                uint32_t o_r_abs = o_r + o_r_s;
                 for (int o_c = 0; o_c < o_c_t; o_c += DIM)
                 {
-                    const uint32_t o_row = o_c + DIM > o_c_t ? o_c_t - o_c : DIM;
-                    uint32_t o_c_abs = o_c + o_c_s;
-                    const int8_t * o_dram_addr = data_o + (o_r_abs * dim_o_c + o_c_abs) * dim_o_ch + o_ch_abs;
-                    uint32_t o_sp_addr = o_sp_addr_start + ((o_ch_s / DIM) * o_r_t + o_r) * o_c_t + o_c;
                     // printf("mvout o_dram_addr 0x%X,o_sp_addr %X,o_col %d,o_row %d\n", o_dram_addr, o_sp_addr, o_col, o_row);
                     //gemmini_extended_mvout(o_dram_addr, o_sp_addr, o_col, o_row);
                     //printf("mvout-\n");
@@ -455,7 +439,7 @@ static void conv_2d (
 }
 
 void conv_2d_auto(
-     const uint32_t *    data_i,
+     const int32_t *    data_i,
      const int32_t *    weight,
      const int32_t  *    bias,
      int8_t *    data_o     ,
@@ -645,9 +629,9 @@ void conv_2d_auto(
                     bool accu   = i_ch != 0;
                     //printf("[%d,%d,%d][%d,%d][%d,%d,%d]\n",dim_i_r, dim_i_c, dim_i_ch, dim_k_r, dim_k_c, dim_o_r, dim_o_c, dim_o_ch);
                     conv_2d(
-                    /*int8_t * data_i         */(int32_t *) data_i ,
-                    /*int8_t * weight         */(int32_t *) weight ,
-                    /*int32_t* bias           */(int32_t *)  bias ,
+                    /*int8_t * data_i         */data_i ,
+                    /*int8_t * weight         */weight ,
+                    /*int32_t* bias           */bias ,
                     /*int8_t * data_o         */(int8_t *) data_o ,
                     /*uint32_t dim_i_r        */dim_i_r           ,
                     /*uint32_t dim_i_c        */dim_i_c           ,
