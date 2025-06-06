@@ -1,0 +1,7 @@
+# depslib dependency file v1.0
+1718861482 source:c:\users\matchbox\testcode\conv2d\main.c
+	<stdio.h>
+	<stdlib.h>
+	<stdint.h>
+	<stdbool.h>
+
